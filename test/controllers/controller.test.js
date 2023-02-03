@@ -24,6 +24,43 @@ describe("Company Score generation api", ()=>{
             "name": "mckinsey",
             "score": 500
         }])
+    }),
+    it("should show the top 2 scoring companies in a sector", async ()=>{
+        jest.spyOn(service, "getService").mockResolvedValue([{
+            "companyId": "46e1d061-e39d-4d5c-8e0e-3fa5d45d9efc",
+            "name": "Apple",
+            "Score": 29,
+            "rank": "1"
+        },
+        {
+            "companyId": "8727cc61-8c4b-4285-8853-2db808392c04",
+            "name": "Google",
+            "Score": 29,
+            "rank": "1"
+        }])
+        const mockRes = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn()
+        }
+        const mockReq={
+            params:{
+                "id":"Software"
+            }
+        }
+        await controller.getCompanies(mockReq, mockRes)
+        expect(mockRes.status).toBeCalledWith(200)
+        expect(mockRes.json).toBeCalledWith([{
+            "companyId": "46e1d061-e39d-4d5c-8e0e-3fa5d45d9efc",
+            "name": "Apple",
+            "Score": 29,
+            "rank": "1"
+        },
+        {
+            "companyId": "8727cc61-8c4b-4285-8853-2db808392c04",
+            "name": "Google",
+            "Score": 29,
+            "rank": "1"
+        }])
     })
 
 })
