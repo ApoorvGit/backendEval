@@ -23,4 +23,15 @@ const getCompanies=async (req,res)=>{
         }
     }
 }
-module.exports={postUrl, getCompanies}
+
+const updateCeo=async (req,res)=>{
+    try{
+        const newBody=await services.updateService(req.params.id, req.body.ceo)
+        res.status(200).json(newBody)
+    }catch (error) {
+        if (error instanceof HttpError) {
+            res.status(error.code).json({ message: error.message })
+        }
+    }
+}
+module.exports={postUrl, getCompanies, updateCeo}
