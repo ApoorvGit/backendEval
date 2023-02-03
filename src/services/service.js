@@ -2,6 +2,7 @@ const fs = require("fs")
 const axios = require("axios")
 const {CompaniesInfo}=require("../../db/models")
 const { Sequelize } = require("sequelize")
+const HttpError=require("../error")
 const postService=async (urlLink)=>{
     try{
 
@@ -65,6 +66,7 @@ const postService=async (urlLink)=>{
     }
     catch (error) {
         console.log(error)
+        throw new HttpError(error.message, error.code)
     }
 }
 
@@ -84,6 +86,21 @@ const getService=async (id)=>{
     }
     catch (error) {
         console.log(error)
+        throw new HttpError(error.message, error.code)
     }
 }
-module.exports={postService, getService}
+const updateService=async (id, ceo)=>{
+    try{
+        console.log(id)
+        console.log(ceo)
+        const result=await CompaniesInfo.update({ "ceo": ceo }, {
+            where: {
+                "companyId":id
+            }
+        })
+        return result
+    }catch(error){
+        throw new HttpError(error.message, error.code)
+    }     
+}  
+module.exports={postService, getService, updateService}
