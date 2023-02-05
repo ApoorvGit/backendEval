@@ -1,4 +1,5 @@
 const controller=require("../../src/controllers/controller") 
+const HTTPError = require("../../src/error")
 const service=require("../../src/services/service") 
 describe("Company Score generation api", ()=>{
 
@@ -61,6 +62,24 @@ describe("Company Score generation api", ()=>{
             "Score": 29,
             "rank": "1"
         }])
+    }),
+    it("should update the ceo of a company", async ()=>{
+        jest.spyOn(service, "updateService").mockResolvedValue([1])
+        const mockRes = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn()
+        }
+        const mockReq={
+            params:{
+                "id":"1"
+            },
+            body:{
+                "ceo":"new ceo"
+            }
+        }
+        await controller.updateCeo(mockReq, mockRes)
+        expect(mockRes.status).toBeCalledWith(200)
+        expect(mockRes.json).toBeCalledWith([1])
     })
 
 })
