@@ -2,7 +2,6 @@ const controller=require("../../src/controllers/controller")
 const HTTPError = require("../../src/error")
 const service=require("../../src/services/service") 
 describe("Company Score generation api", ()=>{
-
     it("should create a new entries in companyInfo database and show the id, name and score of each company", async ()=>{
         jest.spyOn(service, "postService").mockResolvedValue([{
             "id":"1",
@@ -25,6 +24,19 @@ describe("Company Score generation api", ()=>{
             "name": "mckinsey",
             "score": 500
         }])
+    }),
+    it("should throw an error with 404 status code", async ()=>{
+        jest.spyOn(service, "postService").mockResolvedValue(new Error("resource not found"))
+        const mockRes = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn()
+        }
+        const mockReq={
+            body:{
+            }
+        }
+        await controller.postUrl(mockReq, mockRes)
+        expect(mockRes.json).toBeCalledWith(new Error("resource not found"))
     }),
     it("should show the top 2 scoring companies in a sector", async ()=>{
         jest.spyOn(service, "getService").mockResolvedValue([{
@@ -63,6 +75,19 @@ describe("Company Score generation api", ()=>{
             "rank": "1"
         }])
     }),
+    it("should throw an error with 404 status code when sector id is not provided", async ()=>{
+        jest.spyOn(service, "getService").mockResolvedValue(new Error("No such sector found"))
+        const mockRes = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn()
+        }
+        const mockReq={
+            params:{
+            }
+        }
+        await controller.getCompanies(mockReq, mockRes)
+        expect(mockRes.json).toBeCalledWith(new Error("No such sector found"))
+    }),
     it("should update the ceo of a company", async ()=>{
         jest.spyOn(service, "updateService").mockResolvedValue([1])
         const mockRes = {
@@ -80,6 +105,22 @@ describe("Company Score generation api", ()=>{
         await controller.updateCeo(mockReq, mockRes)
         expect(mockRes.status).toBeCalledWith(200)
         expect(mockRes.json).toBeCalledWith([1])
+    }),
+    it("should throw an 404 error if id is not provided", async ()=>{
+        jest.spyOn(service, "updateService").mockResolvedValue(new Error("company id not found"))
+        const mockRes = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn()
+        }
+        const mockReq={
+            params:{
+            },
+            body:{
+                "ceo":"new ceo"
+            }
+        }
+        await controller.updateCeo(mockReq, mockRes)
+        expect(mockRes.json).toBeCalledWith(new Error("company id not found"))
     })
 
 })
